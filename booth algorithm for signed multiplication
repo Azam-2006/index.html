@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booth's Multiplier | Unit III Activity 19</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #0a0d12;
+            --bg-card: #111620;
+            --bg-card-subtle: #171f2c;
+            --border: #1f2a3a;
+            --border-highlight: #2a3a50;
+            --accent: #a3e635;
+            --accent-dim: rgba(163, 230, 53, 0.15);
+            --accent-glow: rgba(163, 230, 53, 0.35);
+            --text-main: #f1f5f9;
+            --text-muted: #8b9bb4;
+            --danger: #ef4444;
+            --warning: #fbbf24;
+            --blue: #38bdf8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background-image: 
+                radial-gradient(ellipse at 80% 0%, rgba(163, 230, 53, 0.04) 0%, transparent 60%),
+                radial-gradient(ellipse at 20% 100%, rgba(56, 189, 248, 0.03) 0%, transparent 60%);
+        }
+
+        header {
+            padding: 18px 36px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 13, 18, 0.85);
+            backdrop-filter: blur(8px);
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .tag-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 9999px;
+            background: var(--accent-dim);
+            color: var(--accent);
+            border: 1px solid var(--accent);
+        }
+
+        .tag-pill::before {
+            content: "";
+            width: 6px;
+            height: 6px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent);
+        }
+
+        .header-title-sub {
+            font-size: 12px;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .main-wrapper {
+            padding: 24px 36px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 1600px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .hero-banner {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 20px;
+        }
+
+        .hero-content h1 {
+            font-size: 34px;
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+        }
+
+        .hero-content h1 span {
+            color: var(--accent);
+        }
+
+        .hero-content p {
+            color: var(--text-muted);
+            font-size: 14px;
+            max-width: 740px;
+        }
+
+        .hero-stats {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 12px 20px;
+            border-radius: 12px;
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+
+        .hero-stats .badge {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 10px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+        }
+
+        .hero-stats .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1.1;
+            margin-top: 4px;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr 340px;
+            gap: 18px;
+            align-items: start;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-header {
+            padding: 12px 18px;
+            background: var(--bg-card-subtle);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .card-title {
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            font-family: 'JetBrains Mono', monospace;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title span.badge-num {
+            background: rgba(255, 255, 255, 0.08);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            color: var(--accent);
+        }
+
+        .card-body {
+            padding: 16px;
+        }
+
+        .input-group {
+            margin-bottom: 12px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-muted);
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 6px;
+        }
+
+        .input-box {
+            width: 100%;
+            background: var(--bg-base);
+            border: 1px solid var(--border);
+            color: var(--accent);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .input-box:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 10px var(--accent-dim);
+        }
+
+        .btn {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #000;
+            font-weight: 700;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 14px var(--accent-glow);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card-subtle);
+            border-color: var(--border-highlight);
+            color: var(--text-main);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .booth-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12px;
+        }
+
+        .booth-table th {
+            text-align: left;
+            padding: 10px 12px;
+            color: var(--text-muted);
+            font-size: 11px;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg-card-subtle);
+        }
+
+        .booth-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+            color: var(--text-main);
+            vertical-align: middle;
+        }
+
+        .booth-table tr.active-row {
+            background: rgba(163, 230, 53, 0.12);
+        }
+
+        .booth-table tr.active-row td {
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        .rule-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            background: rgba(56, 189, 248, 0.15);
+            color: var(--blue);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+
+        .register-tile {
+            background: var(--bg-base);
+            border: 1px solid var(--border);
+            padding: 10px 14px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 8px;
+            transition: all 0.2s;
+        }
+
+        .register-tile.highlight {
+            border-color: var(--accent);
+            background: var(--accent-dim);
+        }
+
+        .terminal-box {
+            background: #050709;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            margin-top: 14px;
+        }
+
+        .terminal-header {
+            font-size: 10px;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .terminal-header::before {
+            content: "";
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+        }
+
+        .terminal-output {
+            color: #4ade80;
+            font-size: 11px;
+            line-height: 1.5;
+            min-height: 90px;
+            max-height: 140px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="header-left">
+            <div class="tag-pill">Activity 19</div>
+            <div class="header-title-sub">Computer Architecture | Unit III Arithmetic</div>
+        </div>
+        <div style="font-family: 'JetBrains Mono', monospace; font-size: 12px; color: var(--accent);">
+            BOOTH SIGNED MULTIPLICATION ALGORITHM
+        </div>
+    </header>
+
+    <div class="main-wrapper">
+        <div class="hero-banner">
+            <div class="hero-content">
+                <h1>Signed arithmetic.<br><span>Zero special cases for negative.</span></h1>
+                <p>Simulate 2's complement hardware multiplication using Booth's recoding rules. Observe Accumulator (A), Multiplier (Q), Q<sub>-1</sub>, and Arithmetic Right Shift (ARS) cycle-by-cycle.</p>
+            </div>
+            <div class="hero-stats">
+                <span class="badge">Expected Product (M × Q)</span>
+                <span class="stat-value" id="badge-prod">-35</span>
+                <span class="stat-label" id="badge-calc">7 × (-5)</span>
+            </div>
+        </div>
+
+        <div class="grid-layout">
+            <!-- Left Panel: Input Multiplicand and Multiplier -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><span class="badge-num">01</span> Operands (Signed)</div>
+                </div>
+                <div class="card-body">
+                    <div class="input-group">
+                        <label for="input-m">Multiplicand (M) [-15 to 15]</label>
+                        <input type="number" id="input-m" class="input-box" value="7" min="-15" max="15">
+                    </div>
+
+                    <div class="input-group">
+                        <label for="input-q">Multiplier (Q) [-15 to 15]</label>
+                        <input type="number" id="input-q" class="input-box" value="-5" min="-15" max="15">
+                    </div>
+
+                    <div style="display: flex; gap: 8px; margin: 14px 0 10px 0;">
+                        <button class="btn btn-primary" onclick="stepSim()">Step Cycle</button>
+                        <button class="btn btn-secondary" id="btn-run" onclick="toggleRun()">Auto Run</button>
+                    </div>
+
+                    <button class="btn btn-secondary" onclick="resetSim()">Reset Simulator</button>
+
+                    <div class="terminal-box">
+                        <div class="terminal-header">ALU Status & Decisions</div>
+                        <div class="terminal-output" id="terminal-out">> Multiplier ready. Press "Step Cycle" or "Auto Run".</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Middle Panel: Cycle Execution Table -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><span class="badge-num">02</span> Booth Register Tracing Table</div>
+                    <span style="font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--accent);">N = 5 Bits</span>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="booth-table">
+                        <thead>
+                            <tr>
+                                <th>Step / Operation</th>
+                                <th>A (Acc)</th>
+                                <th>Q (Multiplier)</th>
+                                <th>Q<sub>-1</sub></th>
+                                <th>M</th>
+                                <th>Count</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trace-body">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Right Panel: Hardware Registers -->
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title"><span class="badge-num">03</span> Active Hardware Registers</div>
+                    <span style="font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--text-muted);">2's Complement</span>
+                </div>
+                <div class="card-body">
+                    <div class="register-tile" id="tile-a">
+                        <div>
+                            <div style="font-weight: 700;">Accumulator (A)</div>
+                            <div style="font-size: 10px; color: var(--text-muted);">Upper Product Register</div>
+                        </div>
+                        <div id="disp-a" style="color: var(--accent); font-weight: 700;">00000</div>
+                    </div>
+
+                    <div class="register-tile" id="tile-q">
+                        <div>
+                            <div style="font-weight: 700;">Multiplier (Q)</div>
+                            <div style="font-size: 10px; color: var(--text-muted);">Lower Product Register</div>
+                        </div>
+                        <div id="disp-q" style="color: var(--blue); font-weight: 700;">11011</div>
+                    </div>
+
+                    <div class="register-tile" id="tile-qm1">
+                        <div>
+                            <div style="font-weight: 700;">Q<sub>-1</sub> Flip-Flop</div>
+                            <div style="font-size: 10px; color: var(--text-muted);">Shifted-out previous bit</div>
+                        </div>
+                        <div id="disp-qm1" style="color: var(--warning); font-weight: 700;">0</div>
+                    </div>
+
+                    <div class="register-tile" id="tile-m">
+                        <div>
+                            <div style="font-weight: 700;">Multiplicand (M)</div>
+                            <div style="font-size: 10px; color: var(--text-muted);">Loaded Operand</div>
+                        </div>
+                        <div id="disp-m" style="color: var(--text-main); font-weight: 700;">00111 (+7)</div>
+                    </div>
+
+                    <div class="register-tile" id="tile-negm">
+                        <div>
+                            <div style="font-weight: 700;">-M (2's Comp)</div>
+                            <div style="font-size: 10px; color: var(--text-muted);">Subtrahend operand</div>
+                        </div>
+                        <div id="disp-negm" style="color: var(--danger); font-weight: 700;">11001 (-7)</div>
+                    </div>
+
+                    <div class="register-tile">
+                        <div>
+                            <div style="font-weight: 700;">Cycle Counter</div>
+                            <div style="font-size: 10px; color: var(--text-muted);">Remaining shifts</div>
+                        </div>
+                        <div id="disp-count" style="color: var(--accent); font-weight: 700;">5</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BITS = 5;
+        let M = 7;
+        let Q = -5;
+        let A = 0;
+        let Q_reg = 0;
+        let Q_minus1 = 0;
+        let count = BITS;
+        let finished = false;
+        let subStep = 0; // 0: check & add/sub, 1: shift
+        let isRunning = false;
+        let runInterval = null;
+
+        function toTwosComplement(num, bits) {
+            let n = num < 0 ? (1 << bits) + num : num;
+            return (n & ((1 << bits) - 1)).toString(2).padStart(bits, '0');
+        }
+
+        function fromTwosComplement(str) {
+            let val = parseInt(str, 2);
+            if (str[0] === '1') {
+                val -= (1 << str.length);
+            }
+            return val;
+        }
+
+        function updateHero() {
+            M = parseInt(document.getElementById('input-m').value) || 0;
+            Q = parseInt(document.getElementById('input-q').value) || 0;
+            const prod = M * Q;
+            document.getElementById('badge-prod').innerText = prod;
+            document.getElementById('badge-calc').innerText = `${M} × (${Q})`;
+        }
+
+        function appendLog(msg) {
+            const out = document.getElementById('terminal-out');
+            out.innerText += "\n> " + msg;
+            out.scrollTop = out.scrollHeight;
+        }
+
+        function addTableRow(op, aStr, qStr, qm1, countVal, isHighlighted = false) {
+            const tbody = document.getElementById('trace-body');
+            const tr = document.createElement('tr');
+            if (isHighlighted) tr.className = 'active-row';
+            tr.innerHTML = `
+                <td>${op}</td>
+                <td style="color: var(--accent); font-weight: 700;">${aStr}</td>
+                <td style="color: var(--blue); font-weight: 700;">${qStr}</td>
+                <td style="color: var(--warning); font-weight: 700;">${qm1}</td>
+                <td>${toTwosComplement(M, BITS)}</td>
+                <td>${countVal}</td>
+            `;
+            tbody.appendChild(tr);
+        }
+
+        function resetSim() {
+            if (isRunning) toggleRun();
+            updateHero();
+            A = 0;
+            let qRaw = Q < 0 ? (1 << BITS) + Q : Q;
+            Q_reg = qRaw & ((1 << BITS) - 1);
+            Q_minus1 = 0;
+            count = BITS;
+            subStep = 0;
+            finished = false;
+
+            document.getElementById('disp-a').innerText = toTwosComplement(A, BITS);
+            document.getElementById('disp-q').innerText = toTwosComplement(Q_reg, BITS);
+            document.getElementById('disp-qm1').innerText = Q_minus1;
+            document.getElementById('disp-m').innerText = `${toTwosComplement(M, BITS)} (${M >= 0 ? '+' : ''}${M})`;
+            document.getElementById('disp-negm').innerText = `${toTwosComplement(-M, BITS)} (${-M >= 0 ? '+' : ''}${-M})`;
+            document.getElementById('disp-count').innerText = count;
+
+            document.getElementById('trace-body').innerHTML = '';
+            document.getElementById('terminal-out').innerText = `> Initialized Booth's Multiplier: M = ${M}, Q = ${Q}\n> Registers set. Press "Step Cycle" or "Auto Run".`;
+
+            addTableRow("Initial State", toTwosComplement(A, BITS), toTwosComplement(Q_reg, BITS), Q_minus1, count);
+        }
+
+        function stepSim() {
+            if (finished) return;
+
+            let q0 = Q_reg & 1;
+            let pair = `${q0}${Q_minus1}`;
+
+            if (subStep === 0) {
+                // Decision Step based on Q0 Q-1
+                if (pair === "10") {
+                    A = A - M;
+                    appendLog(`Bit Pair Q0 Q-1 = 10 -> Subtract Multiplicand (A = A - M).`);
+                    addTableRow(`A = A - M (Pair 10)`, toTwosComplement(A, BITS), toTwosComplement(Q_reg, BITS), Q_minus1, count, true);
+                } else if (pair === "01") {
+                    A = A + M;
+                    appendLog(`Bit Pair Q0 Q-1 = 01 -> Add Multiplicand (A = A + M).`);
+                    addTableRow(`A = A + M (Pair 01)`, toTwosComplement(A, BITS), toTwosComplement(Q_reg, BITS), Q_minus1, count, true);
+                } else {
+                    appendLog(`Bit Pair Q0 Q-1 = ${pair} -> No ALU Operation (Only Shift next).`);
+                    addTableRow(`No Operation (Pair ${pair})`, toTwosComplement(A, BITS), toTwosComplement(Q_reg, BITS), Q_minus1, count);
+                }
+                subStep = 1;
+            } else {
+                // Arithmetic Right Shift (ARS) of [A, Q, Q-1]
+                let aBin = toTwosComplement(A, BITS);
+                let qBin = toTwosComplement(Q_reg, BITS);
+                let combined = aBin + qBin + Q_minus1; // 11 bits
+
+                // Shift right preserving MSB (Arithmetic shift)
+                let signBit = combined[0];
+                let shifted = signBit + combined.slice(0, combined.length - 1);
+
+                let newABin = shifted.slice(0, BITS);
+                let newQBin = shifted.slice(BITS, BITS * 2);
+                let newQm1 = parseInt(shifted[shifted.length - 1], 10);
+
+                A = fromTwosComplement(newABin);
+                Q_reg = parseInt(newQBin, 2);
+                Q_minus1 = newQm1;
+                count--;
+
+                appendLog(`Arithmetic Right Shift (ARS) completed. Count remaining: ${count}`);
+                addTableRow(`ARS [A, Q, Q-1]`, toTwosComplement(A, BITS), toTwosComplement(Q_reg, BITS), Q_minus1, count);
+
+                subStep = 0;
+
+                if (count === 0) {
+                    finished = true;
+                    let finalBin = toTwosComplement(A, BITS) + toTwosComplement(Q_reg, BITS);
+                    let finalDec = fromTwosComplement(finalBin);
+                    appendLog(`> MULTIPLICATION COMPLETE!`);
+                    appendLog(`> Product in (A, Q) = ${finalBin} in binary = ${finalDec} in decimal.`);
+                    if (isRunning) toggleRun();
+                }
+            }
+
+            document.getElementById('disp-a').innerText = toTwosComplement(A, BITS);
+            document.getElementById('disp-q').innerText = toTwosComplement(Q_reg, BITS);
+            document.getElementById('disp-qm1').innerText = Q_minus1;
+            document.getElementById('disp-count').innerText = count;
+        }
+
+        function toggleRun() {
+            const btn = document.getElementById('btn-run');
+            if (isRunning) {
+                clearInterval(runInterval);
+                isRunning = false;
+                btn.innerText = "Auto Run";
+                btn.classList.remove('btn-reset');
+                btn.classList.add('btn-secondary');
+            } else {
+                if (finished) resetSim();
+                isRunning = true;
+                btn.innerText = "Pause";
+                btn.classList.remove('btn-secondary');
+                btn.classList.add('btn-reset');
+                runInterval = setInterval(() => {
+                    stepSim();
+                }, 450);
+            }
+        }
+
+        document.getElementById('input-m').addEventListener('input', () => resetSim());
+        document.getElementById('input-q').addEventListener('input', () => resetSim());
+
+        resetSim();
+    </script>
+</body>
+</html>
